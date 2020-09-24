@@ -1,0 +1,34 @@
+---
+title: '0925'
+author: "Shanshan Hu"
+date: "09/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggthemes)
+library(glmnet) # ridge and lasso
+library(gam) # for gam
+library(pls) # pcr pls
+library(leaps) # regsubset
+library(MASS) # lda qda
+library(class) # knn
+library(caret) # knn with prob
+library(gbm) # boosting
+library(boot) # cross validation
+library(car) # vif, residual plots, partial residual plots
+library (ROCR) 
+library (pROC) # ROC AUC plot
+library(tree)
+library(randomForest)
+library(ranger) # Random Forest
+library(neuralnet) # DNN
+library(e1071) # SVM
+library(RandPro) # Random Projection Method 1
+
+library(pryr) # memory count
+library(MatrixModels) # sparse matrix representation
+```
+
