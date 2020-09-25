@@ -32,4 +32,3 @@ library(pryr) # memory count
 library(MatrixModels) # sparse matrix representation
 ```
 
-KenoHoo: 8:49PM看的见么
