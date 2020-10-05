@@ -21,3 +21,8 @@ bc_sn_Code.rename(index=str, columns={"diagnosis_cd": "DIAGNOSIS_CODE",'indicati
 DIAG_data = pd.merge(DIAG_data,bc_sn_Code,how='left',on='DIAGNOSIS_CODE')
 
 
+#Siqi edit, the output file name is "merged_diag_bc_sn.csv", now this file has the indication code and the diagnosis code
+DIAG_data = pd.read_csv('DIAG.txt',sep='|',header=0)   
+bc_sn_Code = pd.read_csv('BC_SN_ICD_Code.csv',header=0)
+merged_diag = pd.merge(DIAG_data,bc_sn_Code,how='left',on='DIAGNOSIS_CODE')
+merged_diag.to_csv("merged_diag_bc_sn.csv", index= False)   
