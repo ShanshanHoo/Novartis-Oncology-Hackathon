@@ -12,10 +12,6 @@ import pandas as pd
 #from collections import Counter
 os.chdir("/Users/siqisun/Documents/graduate1/novartis hackthon/")
 
-def same_value(a, b):
-    if a == b:
-        return True
-
 px = pd.read_csv('PX.txt', 
                    dtype={"PATIENT_ID": int,"CLAIM_ID": object,"CLAIM_LINE_ITEM": int,
                           "CLAIM_TYP_CD": object,"PROCEDURE_CODE": object,"PRC1_MOD_CD": object,"PRC1_MOD_DESC": object,
@@ -64,8 +60,8 @@ len(px_fil.loc[:, "PX_CLAIM_ID"].unique())#1734748, inidates some px_claim ids a
 len(px['PATIENT_ID'].unique()) #20000, indcates 1 patient have mutliple px claims
 
 all_claims = rx_fil.loc[:, "RX_CLAIM_ID"]
-all_claims = all_claims.append(px_fil.loc[:, "PX_CLAIM_ID"]) 
-len(all_claims) #9614888
+all_claims = all_claims.append(px_fil_nodup.loc[:, "PX_CLAIM_ID"]) 
+len(all_claims) #8930838
 len(all_claims.unique()) #2052070, indicate rx_claim_ids overlap with PX_CLAIM_ID
 '''
 
