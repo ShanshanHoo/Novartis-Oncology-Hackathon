@@ -8,8 +8,6 @@ Created on Sun Oct  4 23:26:28 2020
 #Combine RX and PX claims data, rename NDC in RX and Procedure_code in PX as drug_id, file namae is "rx_px_combine.csv"
 import os
 import pandas as pd
-#import numpy as np
-#from collections import Counter
 os.chdir("/Users/siqisun/Documents/graduate1/novartis hackthon/")
 
 px = pd.read_csv('PX.txt', 
@@ -35,21 +33,21 @@ rx = pd.read_csv('RX.txt',
 rx_fil = rx.loc[:, ["PATIENT_ID", "CLAIM_ID", "SERVICE_DATE", "NDC", "DIAGNOSIS_CODE"]]
 px_fil = px.loc[:, ["PATIENT_ID", "CLAIM_ID",  "SERVICE_DATE", "PROCEDURE_CODE", "DIAGNOSIS_CODE"]]
 
-rx_fil = rx_fil.rename(columns={"CLAIM_ID":"RX_CLAIM_ID", "SERVICE_DATE":"RX_SERVICE_DATE", 
-                                "DIAGNOSIS_CODE":"RX_DIAGNOSIS_CODE", "NDC":"RX_NDC"})
+rx_fil = rx_fil.rename(columns={"NDC":"drug_id"})
 rx_fil = rx_fil.fillna("0")
 
-px_fil = px_fil.rename(columns={"CLAIM_ID":"PX_CLAIM_ID", "SERVICE_DATE":"PX_SERVICE_DATE", 
-                                "DIAGNOSIS_CODE":"PX_DIAGNOSIS_CODE",})
+px_fil = px_fil.rename(columns={"PROCEDURE_CODE":"drug_id",})
 px_fil = px_fil.fillna("0")
 # rx_fil.shape (317323, 5)
 # px_fil.shape (9297565, 5)
 px_fil_nodup = px_fil.drop_duplicates()
 #px_fil_nodup.shape (8613515, 5), indicates duplicates rows, this px dataframe will be further used for merge with rx
+rx_fil_nodup = rx_fil.drop_duplicates()
+#rx_fil_nodup.shape (317322, 5), indicates all the records are unique
 
-merged = rx_fil.append(px_fil_nodup, ignore_index=True)
+merged = rx_fil_nodup.append(px_fil_nodup, ignore_index=True)
 merged = merged.fillna("0")
-# merged.shape (8930838, 9)
+#merged.shape (8930838, 5)
 
 ''' all the following are QC
 len(rx_fil[rx_fil.loc[:, "RX_CLAIM_ID"] != "0"]) #317323, comapred to rx_fil, indicates all rx are linked with the claim id
@@ -66,6 +64,6 @@ len(all_claims.unique()) #2052070, indicate rx_claim_ids overlap with PX_CLAIM_I
 '''
 
 merged = merged.sort_values(by="PATIENT_ID", ascending=False) 
-#merged["px_same_claims"] = np.where(merged["PX_CLAIM_ID"] == merged["PX_CLAIM_ID"], True, False)
-# Counter(merged["same_claims"]), Counter({False: 9614888})
+merged_nodup = merged.drop_duplicates()
+#merged_nodup.shape (8930837, 5), indicates rx records dont fully overlap with px records
 merged.to_csv("rx_px_combine.csv", index = False)
