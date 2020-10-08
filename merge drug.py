@@ -17,8 +17,9 @@ os.chdir("/Users/conta/Documents/Novartis")
 ## merge rx_px_combine with drug reference
 prx = pd.read_csv('rx_px_combine.csv', header=0)
 
-dg_rf = pd.read_csv('Drug Reference.csv',header=0)
+dg_rf = pd.read_csv('Drug Reference1.csv', dtype={"drug_id ": str,"drug_name": str,"drug_generic_name": str},header=0)
 dg_rf = dg_rf[dg_rf.columns[0:3]] 
+dg_rf = dg_rf.rename(columns={"drug_id ":"drug_id"})
 dg_rf.head()
 dg=pd.merge(prx,dg_rf,how='left',on='drug_id',validate="m:1")
 
