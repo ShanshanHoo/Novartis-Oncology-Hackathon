@@ -104,3 +104,49 @@ pxrx.drop_duplicates(inplace=True)
 pxrx.sort_values(by=['PATIENT_ID'],ascending=(False),inplace=True)
 pxrx['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
 pxrx.reset_index(inplace=True)
+
+
+pxrx.sort_values(by=['PATIENT_ID','MONTH_ID'],ascending=(False,True),inplace=True)
+pxrx2 = pxrx.drop_duplicates(subset=['PATIENT_ID'],keep='first',inplace=False)
+pxrx2 = pxrx2[["PATIENT_ID",'MONTH_ID']]
+pxrx3=pd.merge(pxrx,pxrx2,how='left',on="PATIENT_ID")
+def month_diff(row):
+    a=row["MONTH_ID_x"]//100 -row["MONTH_ID_y"]//100 #year
+    b=row["MONTH_ID_x"]%100 -row["MONTH_ID_y"]%100 #month
+    num = a*12 + b
+    return(num)
+pxrx3['MONTH_DIFF'] = pxrx3.apply(lambda x:month_diff(x), axis=1)    
+pxrx3.rename(index=str, columns={"MONTH_ID_x": "MONTH_ID"},inplace=True)
+pxrx3.drop(columns=['MONTH_ID_y'],inplace=True)
+
+
+# 
+dx_mbc= pd.read_csv("/Users/shufei/Novartis/mbc and date.csv")
+
+dx_mbc.drop(columns=['DATE_DIFF','mBC_DIAG_DATE'],inplace=True)
+# only consider mbc
+diag_mbc = dx_mbc.loc[dx_mbc['mBC']== 1,] 
+# consider pid and monthid in pxrx
+pxrx_minus = pxrx3.drop_duplicates(subset=['PATIENT_ID','MONTH_ID'],keep='first',inplace=False)
+
+pxrx_minus2 = pxrx_minus[['PATIENT_ID','MONTH_ID']]
+
+mider =pd.merge(pxrx_minus2,diag_mbc,how="left",on="PATIENT_ID")
+mider2 = mider.loc[mider['mBC']== 1,] 
+def mbc_d (row):
+    if row["MONTH_ID_x"] - row["MONTH_ID_y"] >= 0:
+        part1=1
+    else:
+        part1=0
+    return part1
+#lebal mbc as y
+mider2['y'] = mider2.apply(lambda x:mbc_d(x), axis=1)
+mider2.rename(index=str, columns={"MONTH_ID_x": "MONTH_ID"},inplace=True)
+MID = mider2[["PATIENT_ID","MONTH_ID","y"]]
+
+
+#combine MID 
+pdr = pd.merge(pxrx3,MID,how='left',on=['PATIENT_ID','MONTH_ID'])
+pdr["y"].fillna(0,inplace=True)
+
+pdr.to_csv("mbc_model_data.csv",index=False)
