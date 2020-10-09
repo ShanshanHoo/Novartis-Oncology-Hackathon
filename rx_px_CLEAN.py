@@ -79,7 +79,7 @@ rx['brand'] = rx.apply (lambda row: label_brand(row), axis=1)
 
 
 ## turn DIAGNOSIS_CODE & REFILL_CODE to dummy variables
-rx_dummy=pd.get_dummies(rx, columns=['DIAGNOSIS_CODE','drug_generic_name'])
+rx_dummy=pd.get_dummies(rx, columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','drug_generic_name'])
 rx_dummy.isna().sum()
 rx_dummy.to_csv('rx_clean.csv')
 
@@ -109,6 +109,6 @@ px['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
 
 
 ## dummy CLAIM_LINE_ITEM, PRC_VERS_TYP_ID, NDC, DIAGNOSIS_CODE
-px_dummy=pd.get_dummies(px, columns=['PRC_VERS_TYP_ID','DIAGNOSIS_CODE'])
+px_dummy=pd.get_dummies(px, columns=['PRC_VERS_TYP_ID','DIAGNOSIS_CODE','DIAG_VERS_TYP_ID'])
 px_dummy.isna().sum()
 px_dummy.to_csv('px_clean.csv')
