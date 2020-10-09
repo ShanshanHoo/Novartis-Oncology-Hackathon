@@ -97,5 +97,10 @@ px.drop_duplicates(subset=['PATIENT_ID','MONTH_ID','DIAG_VERS_TYP_ID','DIAGNOSIS
 
 
 # combine RX & PX----------------------------------------------------------------------------------------------
-pxrx = pd.merge(px, rx, on=['PATIENT_ID','MONTH_ID','brand'])
+#pxrx = pd.merge(px, rx, how='inner', on=['PATIENT_ID','MONTH_ID'])
 
+pxrx = pd.concat([px,rx],ignore_index=True)
+pxrx.drop_duplicates(inplace=True)
+pxrx.sort_values(by=['PATIENT_ID'],ascending=(False),inplace=True)
+pxrx['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
+pxrx.reset_index(inplace=True)
