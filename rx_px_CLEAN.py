@@ -10,28 +10,6 @@ import numpy as np
 import seaborn as sns #visualisation
 import matplotlib.pyplot as plt #visualisation
 
-def label_brand (row):
-   if row['drug_generic_name'] == 'PALBOCICLIB' or row['drug_name'] == 'IBRANCE':
-      return 'IBR'
-   if row['drug_generic_name'] == 'FULVESTRANT' or row['drug_name'] == 'FASLODEX':
-      return 'FAS'
-   if row['drug_generic_name'] == 'RIBOCICLIB' or row['drug_name'] == 'KISQALI' or row['drug_name'] == 'KISQALI FEMARA' or row['drug_generic_name'] == 'RIBOCICLIB SUCCINATE-LETROZOLE':
-      return 'KIS'
-   if row['drug_generic_name'] == 'EVEROLIMUS' or row['drug_name'] == 'AFINITOR':
-      return 'AFI'
-   if row['drug_generic_name'] == 'LETROZOLE' or row['drug_name'] == 'FEMARA':
-      return 'LET'
-   if row['drug_generic_name'] == 'ABEMACICLIB' or row['drug_name'] == 'VERZENIO':
-      return 'VER'
-   if row['drug_generic_name'] == 'CHEMO' or row['drug_name'] == 'CHEMO':
-      return 'CHEMO'
-   if row['drug_generic_name'] == 'CAPECITABINE' or row['drug_name'] == 'XELODA':
-      return 'XEL'
-   if row['drug_name'] == 'TAMOXIFEN CITRATE':
-      return 'TAM'
-   if row['drug_generic_name'] == 'ANASTROZOLE' or row['drug_generic_name'] == 'EXEMESTANE' or row['drug_name'] == 'ANASTROZOLE' or row['drug_name'] == 'ARIMIDEX' or row['drug_name'] == 'EXEMESTANE' or row['drug_name'] == 'AROMASIN' or row['drug_name'] == 'NOLVADEX' or row['drug_name'] == 'SOLTAMOX':
-      return 'AI'
-   return 'OTHERS'
 
 # import data, sort by ascending time 
 px = pd.read_csv('E:\\Hackathon_project\\rawdata\\PX.txt',
@@ -67,23 +45,25 @@ rx.sort_values(by=['PATIENT_ID'],ascending=(False),inplace=True)
 # clean RX ----------------------------------------------------------------------------------------
 ## drop FLEXIBLE_FLD_1_CHAR, FLEXIBLE_FLD_2_CHAR, PAYER_PLAN_ID, CLAIM_ID, RESTATE_FLAG
 rx.drop(columns=['FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','PAYER_PLAN_ID','CLAIM_ID','PROVIDER_ID','RESTATE_FLAG'
-                 ,'REFILL_CODE','DSPNSD_QTY','DAYS_SUPPLY'],inplace=True)                                                             
-rx.drop_duplicates(subset=['PATIENT_ID','DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','drug_id'],keep='first',inplace=True)
-## for DIAG_VERS_TYP_ID, fill nan with -1
-rx['DIAG_VERS_TYP_ID'].fillna('-1',inplace=True)
+                 ,'REFILL_CODE','DSPNSD_QTY','SERVICE_DATE','DAYS_SUPPLY'],inplace=True)                                                             
 ## lable drug name
 rx=pd.merge(rx,dg_rf,how='left',on='drug_id',validate="m:1")
-rx['brand'] = rx.apply (lambda row: label_brand(row), axis=1)
-
-
-
-
-## turn DIAGNOSIS_CODE & REFILL_CODE to dummy variables
-rx_dummy=pd.get_dummies(rx, columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','drug_generic_name'])
-rx_dummy.isna().sum()
-rx_dummy.to_csv('rx_clean.csv')
-
-
+rx.loc[(rx['drug_generic_name']=='PALBOCICLIB') | (rx['drug_name']=='IBRANCE'),'brand']='IBR'
+rx.loc[(rx['drug_generic_name']=='FULVESTRANT') | (rx['drug_name']=='FASLODEX'),'brand']='FAS'
+rx.loc[(rx['drug_generic_name']=='RIBOCICLIB') | (rx['drug_name']=='KISQALI') | (rx['drug_name']=='KISQALI FEMARA') | (rx['drug_generic_name']=='RIBOCICLIB SUCCINATE-LETROZOLE'),'brand']='KIS'
+rx.loc[(rx['drug_generic_name']=='EVEROLIMUS') | (rx['drug_name']=='AFINITOR'),'brand']='AFI'
+rx.loc[(rx['drug_generic_name']=='LETROZOLE') | (rx['drug_name']=='FEMARA'),'brand']='LET'
+rx.loc[(rx['drug_generic_name']=='ABEMACICLIB') | (rx['drug_name']=='VERZENIO'),'brand']='VER'
+rx.loc[(rx['drug_generic_name']=='CHEMO') | (rx['drug_name']=='CHEMO'),'brand']='CHEMO'
+rx.loc[(rx['drug_generic_name']=='CAPECITABINE') | (rx['drug_name']=='XELODA'),'brand']='XEL'
+rx.loc[(rx['drug_name']=='TAMOXIFEN CITRATE'),'brand']='TAM'
+rx.loc[(rx['drug_generic_name']=='ANASTROZOLE') | (rx['drug_generic_name']=='EXEMESTANE') | (rx['drug_name']=='ANASTROZOLE') | 
+         (rx['drug_name']=='ARIMIDEX') | (rx['drug_name']=='EXEMESTANE') | 
+        (rx['drug_name']=='AROMASIN')|(rx['drug_name']=='NOLVADEX')|(rx['drug_name']=='SOLTAMOX'),'brand']='AI'
+rx.drop(columns=['drug_id','drug_name','drug_generic_name'],inplace=True)
+## drop
+rx.isna().sum()
+rx.drop_duplicates(subset=['PATIENT_ID','DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','MONTH_ID','brand'],keep='first',inplace=True)
 
 
 
@@ -92,23 +72,30 @@ rx_dummy.to_csv('rx_clean.csv')
 ## drop
 px.drop(columns=['CLAIM_ID','CLAIM_LINE_ITEM','PRC1_MOD_CD','PRC1_MOD_DESC','PROVIDER_BILLING_ID','PROVIDER_FACILITY_ID','PROVIDER_REFERRING_ID','PROVIDER_RENDERING_ID',
                  'SVC_CRGD_AMT','PLACE_OF_SERVICE','PAYER_PLAN_ID','PAY_TYPE','PRODUCT','DIAG_CD_POSN_NBR','DIAG_DESC','WEEK_END_FRI','RESTATE_FLAG',
-                 'FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','CLAIM_TYP_CD','NDC'],inplace=True)
-px.drop_duplicates(subset=['PATIENT_ID','drug_id','DIAG_VERS_TYP_ID','DIAGNOSIS_CODE','PRC_VERS_TYP_ID'],keep='first',inplace=True)
-## for PRC_VERS_TYP_ID, fill nan with -1
-px['PRC_VERS_TYP_ID'].fillna('-1',inplace=True)
+                 'FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','CLAIM_TYP_CD','NDC','SERVICE_DATE'],inplace=True)
 ## lable drug name
 px=pd.merge(px,dg_rf,how='left',on='drug_id',validate="m:1")
-px['brand'] = px.apply (lambda row: label_brand(row), axis=1)
+px.loc[(px['drug_generic_name']=='PALBOCICLIB') | (px['drug_name']=='IBRANCE'),'brand']='IBR'
+px.loc[(px['drug_generic_name']=='FULVESTRANT') | (px['drug_name']=='FASLODEX'),'brand']='FAS'
+px.loc[(px['drug_generic_name']=='RIBOCICLIB') | (px['drug_name']=='KISQALI') | (px['drug_name']=='KISQALI FEMARA') | (px['drug_generic_name']=='RIBOCICLIB SUCCINATE-LETROZOLE'),'brand']='KIS'
+px.loc[(px['drug_generic_name']=='EVEROLIMUS') | (px['drug_name']=='AFINITOR'),'brand']='AFI'
+px.loc[(px['drug_generic_name']=='LETROZOLE') | (px['drug_name']=='FEMARA'),'brand']='LET'
+px.loc[(px['drug_generic_name']=='ABEMACICLIB') | (px['drug_name']=='VERZENIO'),'brand']='VER'
+px.loc[(px['drug_generic_name']=='CHEMO') | (px['drug_name']=='CHEMO'),'brand']='CHEMO'
+px.loc[(px['drug_generic_name']=='CAPECITABINE') | (px['drug_name']=='XELODA'),'brand']='XEL'
+px.loc[(px['drug_name']=='TAMOXIFEN CITRATE'),'brand']='TAM'
+px.loc[(px['drug_generic_name']=='ANASTROZOLE') | (px['drug_generic_name']=='EXEMESTANE') | (px['drug_name']=='ANASTROZOLE') | 
+         (px['drug_name']=='ARIMIDEX') | (px['drug_name']=='EXEMESTANE') | 
+        (px['drug_name']=='AROMASIN')|(px['drug_name']=='NOLVADEX')|(px['drug_name']=='SOLTAMOX'),'brand']='AI'
+px.drop(columns=['drug_id','drug_name','drug_generic_name'],inplace=True)
 ## for UNIT_OF_SVC_AMT, fill nan with 0
 px['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
+## drop
+px.isna().sum()
+px.drop_duplicates(subset=['PATIENT_ID','MONTH_ID','DIAG_VERS_TYP_ID','DIAGNOSIS_CODE','PRC_VERS_TYP_ID','brand'],keep='first',inplace=True)
 
 
 
+# combine RX & PX----------------------------------------------------------------------------------------------
+pxrx = pd.merge(px, rx, on=['PATIENT_ID','MONTH_ID','brand'])
 
-
-
-
-## dummy CLAIM_LINE_ITEM, PRC_VERS_TYP_ID, NDC, DIAGNOSIS_CODE
-px_dummy=pd.get_dummies(px, columns=['PRC_VERS_TYP_ID','DIAGNOSIS_CODE','DIAG_VERS_TYP_ID'])
-px_dummy.isna().sum()
-px_dummy.to_csv('px_clean.csv')
