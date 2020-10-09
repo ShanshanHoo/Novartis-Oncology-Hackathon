@@ -69,3 +69,5 @@ result.iloc[3,0] = tn_4
 result.iloc[3,1] = fp_4
 result.iloc[3,2] = fn_4
 result.iloc[3,3] = tp_4
+
+result.to_csv('result_obj1.csv')
