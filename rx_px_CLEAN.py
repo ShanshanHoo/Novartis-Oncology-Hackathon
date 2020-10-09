@@ -10,6 +10,29 @@ import numpy as np
 import seaborn as sns #visualisation
 import matplotlib.pyplot as plt #visualisation
 
+def label_brand (row):
+   if row['drug_generic_name'] == 'PALBOCICLIB' or row['drug_name'] == 'IBRANCE':
+      return 'IBR'
+   if row['drug_generic_name'] == 'FULVESTRANT' or row['drug_name'] == 'FASLODEX':
+      return 'FAS'
+   if row['drug_generic_name'] == 'RIBOCICLIB' or row['drug_name'] == 'KISQALI' or row['drug_name'] == 'KISQALI FEMARA' or row['drug_generic_name'] == 'RIBOCICLIB SUCCINATE-LETROZOLE':
+      return 'KIS'
+   if row['drug_generic_name'] == 'EVEROLIMUS' or row['drug_name'] == 'AFINITOR':
+      return 'AFI'
+   if row['drug_generic_name'] == 'LETROZOLE' or row['drug_name'] == 'FEMARA':
+      return 'LET'
+   if row['drug_generic_name'] == 'ABEMACICLIB' or row['drug_name'] == 'VERZENIO':
+      return 'VER'
+   if row['drug_generic_name'] == 'CHEMO' or row['drug_name'] == 'CHEMO':
+      return 'CHEMO'
+   if row['drug_generic_name'] == 'CAPECITABINE' or row['drug_name'] == 'XELODA':
+      return 'XEL'
+   if row['drug_name'] == 'TAMOXIFEN CITRATE':
+      return 'TAM'
+   if row['drug_generic_name'] == 'ANASTROZOLE' or row['drug_generic_name'] == 'EXEMESTANE' or row['drug_name'] == 'ANASTROZOLE' or row['drug_name'] == 'ARIMIDEX' or row['drug_name'] == 'EXEMESTANE' or row['drug_name'] == 'AROMASIN' or row['drug_name'] == 'NOLVADEX' or row['drug_name'] == 'SOLTAMOX':
+      return 'AI'
+   return 'OTHERS'
+
 # import data, sort by ascending time 
 px = pd.read_csv('E:\\Hackathon_project\\rawdata\\PX.txt',
                  dtype={"PATIENT_ID": int,"CLAIM_ID": object,"CLAIM_LINE_ITEM": int,
@@ -39,62 +62,53 @@ rx.rename(index=str, columns={'NDC':'drug_id'},inplace=True)
 px.sort_values(by=['PATIENT_ID'],ascending=(False),inplace=True)
 rx.sort_values(by=['PATIENT_ID'],ascending=(False),inplace=True)
 
-# clean RX
+
+
+# clean RX ----------------------------------------------------------------------------------------
 ## drop FLEXIBLE_FLD_1_CHAR, FLEXIBLE_FLD_2_CHAR, PAYER_PLAN_ID, CLAIM_ID, RESTATE_FLAG
-rx.drop(columns=['FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','PAYER_PLAN_ID','CLAIM_ID','PROVIDER_ID','RESTATE_FLAG'],inplace=True)
-## check unique value of each columns
-print('unmber of unique value: ', '\n', 'PATIENT_ID ', len(rx['PATIENT_ID'].unique()),'\n',
-      'drug_id ', len(rx['drug_id'].unique()),'\n',
-      'DIAGNOSIS_CODE ', len(rx['DIAGNOSIS_CODE'].unique()),'\n',
-      'DIAG_VERS_TYP_ID ', len(rx['DIAG_VERS_TYP_ID'].unique()),'\n',
-      'REFILL_CODE ', len(rx['REFILL_CODE'].unique()),'\n',
-      'DSPNSD_QTY ', len(rx['DSPNSD_QTY'].unique()),'\n',
-      'DAYS_SUPPLY ', len(rx['DAYS_SUPPLY'].unique()),'\n',
-      'SERVICE_DATE ', len(rx['SERVICE_DATE'].unique()),'\n',
-     'MONTH_ID ', len(rx['MONTH_ID'].unique()),'\n')
+rx.drop(columns=['FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','PAYER_PLAN_ID','CLAIM_ID','PROVIDER_ID','RESTATE_FLAG'
+                 ,'REFILL_CODE','DSPNSD_QTY','DAYS_SUPPLY'],inplace=True)                                                             
+rx.drop_duplicates(subset=['PATIENT_ID','DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','drug_id'],keep='first',inplace=True)
 ## for DIAG_VERS_TYP_ID, fill nan with -1
-rx['DIAG_VERS_TYP_ID'].isnull().any()
-rx['DIAG_VERS_TYP_ID'].unique()
 rx['DIAG_VERS_TYP_ID'].fillna('-1',inplace=True)
-rx['DIAG_VERS_TYP_ID'].unique()
+## lable drug name
+rx=pd.merge(rx,dg_rf,how='left',on='drug_id',validate="m:1")
+rx['brand'] = rx.apply (lambda row: label_brand(row), axis=1)
+
+
+
+
 ## turn DIAGNOSIS_CODE & REFILL_CODE to dummy variables
-rx_dummy=pd.get_dummies(rx, columns=['DIAGNOSIS_CODE','REFILL_CODE'])
+rx_dummy=pd.get_dummies(rx, columns=['DIAGNOSIS_CODE','drug_generic_name'])
 rx_dummy.isna().sum()
 rx_dummy.to_csv('rx_clean.csv')
 
 
-# clean PX
-## drop PRC1_MOD_DESC, PROVIDER_BILLING_ID, PROVIDER_FACILITY_ID, PROVIDER_REFERRING_ID, PROVIDER_RENDERING_ID, SVC_CRGD_AMT, PLACE_OF_SERVICE, 
-## PAYER_PLAN_ID, PAY_TYPE, PRODUCT, DIAG_DESC, WEEK_END_FRI, RESTATE_FLAG, FLEXIBLE_FLD_1_CHAR, FLEXIBLE_FLD_2_CHAR
-px.drop(columns=['CLAIM_ID','PRC1_MOD_DESC','PROVIDER_BILLING_ID','PROVIDER_FACILITY_ID','PROVIDER_REFERRING_ID','PROVIDER_RENDERING_ID',
-                 'SVC_CRGD_AMT','PLACE_OF_SERVICE','PAYER_PLAN_ID','PAY_TYPE','PRODUCT','DIAG_DESC','WEEK_END_FRI','RESTATE_FLAG',
-                 'FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','CLAIM_TYP_CD'],inplace=True)
-## check unique value of each columns
-print('unmber of unique value: ', '\n', 'PATIENT_ID ', len(px['PATIENT_ID'].unique()),'\n',
-      'CLAIM_LINE_ITEM ', len(px['CLAIM_LINE_ITEM'].unique()),'\n',
-      'drug_id ', len(px['drug_id'].unique()),'\n',
-      'PRC1_MOD_CD ', len(px['PRC1_MOD_CD'].unique()),'\n',
-      'PRC_VERS_TYP_ID ', len(px['PRC_VERS_TYP_ID'].unique()),'\n',
-     'SERVICE_DATE ', len(px['SERVICE_DATE'].unique()),'\n',
-     'MONTH_ID ', len(px['MONTH_ID'].unique()),'\n',
-     'UNIT_OF_SVC_AMT ', len(px['UNIT_OF_SVC_AMT'].unique()),'\n',
-     'NDC ', len(px['NDC'].unique()),'\n',
-     'DIAGNOSIS_CODE ', len(px['DIAGNOSIS_CODE'].unique()),'\n',
-     'DIAG_CD_POSN_NBR ', len(px['DIAG_CD_POSN_NBR'].unique()),'\n',
-     'DIAG_VERS_TYP_ID ', len(px['DIAG_VERS_TYP_ID'].unique()),'\n')
+
+
+
+
+# clean PX----------------------------------------------------------------------------------------------
+## drop
+px.drop(columns=['CLAIM_ID','CLAIM_LINE_ITEM','PRC1_MOD_CD','PRC1_MOD_DESC','PROVIDER_BILLING_ID','PROVIDER_FACILITY_ID','PROVIDER_REFERRING_ID','PROVIDER_RENDERING_ID',
+                 'SVC_CRGD_AMT','PLACE_OF_SERVICE','PAYER_PLAN_ID','PAY_TYPE','PRODUCT','DIAG_CD_POSN_NBR','DIAG_DESC','WEEK_END_FRI','RESTATE_FLAG',
+                 'FLEXIBLE_FLD_1_CHAR','FLEXIBLE_FLD_2_CHAR','CLAIM_TYP_CD','NDC'],inplace=True)
+px.drop_duplicates(subset=['PATIENT_ID','drug_id','DIAG_VERS_TYP_ID','DIAGNOSIS_CODE','PRC_VERS_TYP_ID'],keep='first',inplace=True)
 ## for PRC_VERS_TYP_ID, fill nan with -1
-px['PRC_VERS_TYP_ID'].isnull().any()
-px['PRC_VERS_TYP_ID'].unique()
 px['PRC_VERS_TYP_ID'].fillna('-1',inplace=True)
-px['PRC_VERS_TYP_ID'].unique()
+## lable drug name
+px=pd.merge(px,dg_rf,how='left',on='drug_id',validate="m:1")
+px['brand'] = px.apply (lambda row: label_brand(row), axis=1)
 ## for UNIT_OF_SVC_AMT, fill nan with 0
 px['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
-## dummy CLAIM_LINE_ITEM, PRC1_MOD_CD, PRC_VERS_TYP_ID, NDC, DIAGNOSIS_CODE
-px_dummy=pd.get_dummies(px, columns=['CLAIM_LINE_ITEM','PRC1_MOD_CD','PRC_VERS_TYP_ID','NDC','DIAGNOSIS_CODE'])
+
+
+
+
+
+
+
+## dummy CLAIM_LINE_ITEM, PRC_VERS_TYP_ID, NDC, DIAGNOSIS_CODE
+px_dummy=pd.get_dummies(px, columns=['PRC_VERS_TYP_ID','DIAGNOSIS_CODE'])
 px_dummy.isna().sum()
 px_dummy.to_csv('px_clean.csv')
-
-################################################# 输出的是px_dummy.csv和rx_dummy.csv
-
-# merge PX and RX
-
