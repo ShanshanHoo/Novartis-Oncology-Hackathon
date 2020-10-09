@@ -15,11 +15,13 @@ from sklearn.metrics import classification_report as cr
 from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 
+## import data from mbc_model_data.csv
+pxrx = pd.read_csv('E:\\Hackathon_project\\rawdata\\mbc_model_data.csv',header = 0)
+
 
 result = pd.DataFrame(index=['XGBoo','RF','RP-XGB','RP-RF'],columns=['tn','fp','fn','tp'])
-
 y = pxrx['y']
-X = pxrx.drop(columns=['y','PATIENT_ID','MONTH_ID'])
+X = pxrx.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])
 X = pd.get_dummies(X,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID'])
 X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.25, random_state=42)
 
