@@ -30,8 +30,8 @@ rx = pd.read_csv('RX.txt',
                           "RESTATE_FLAG": object,"FLEXIBLE_FLD_1_CHAR": object,"FLEXIBLE_FLD_2_CHAR": object}, 
                    sep="|")
 
-rx_fil = rx.loc[:, ["PATIENT_ID", "CLAIM_ID", "SERVICE_DATE", "NDC", "DIAGNOSIS_CODE"]]
-px_fil = px.loc[:, ["PATIENT_ID", "CLAIM_ID",  "SERVICE_DATE", "PROCEDURE_CODE", "DIAGNOSIS_CODE"]]
+rx_fil = rx.loc[:, ["PATIENT_ID", "CLAIM_ID", "MONTH_ID", "SERVICE_DATE", "NDC", "DIAGNOSIS_CODE"]]
+px_fil = px.loc[:, ["PATIENT_ID", "CLAIM_ID",  "MONTH_ID", "SERVICE_DATE", "PROCEDURE_CODE", "DIAGNOSIS_CODE"]]
 
 rx_fil = rx_fil.rename(columns={"NDC":"drug_id"})
 rx_fil = rx_fil.fillna("0")

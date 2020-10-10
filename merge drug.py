@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import sklearn as sk
 import re
+from sklearn.model_selection import train_test_split
 
 os.chdir("/Users/conta/Documents/Novartis")
 
