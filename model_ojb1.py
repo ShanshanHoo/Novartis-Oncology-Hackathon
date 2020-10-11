@@ -22,6 +22,7 @@ result = pd.DataFrame(index=['XGBoo','RF','RP-XGB','RP-RF','SVC','RP-SVC'],colum
 pxrx = pd.read_csv('mbc_model_data.csv',header = 0)
 pxrx['MONTH_DIFF']=(pxrx['MONTH_DIFF']-pxrx['MONTH_DIFF'].mean())/pxrx['MONTH_DIFF'].std()
 pxrx['UNIT_OF_SVC_AMT']=(pxrx['UNIT_OF_SVC_AMT']-pxrx['UNIT_OF_SVC_AMT'].mean())/pxrx['UNIT_OF_SVC_AMT'].std()
+pxrx = pd.get_dummies(pxrx,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID'])
 
 print('# of mbc patients: ',len(pxrx[pxrx['y']==1]['PATIENT_ID'].unique()))
 print('# of non-mbc patients: ',len(pxrx['PATIENT_ID'].unique())-len(pxrx[pxrx['y']==1]['PATIENT_ID'].unique()))
