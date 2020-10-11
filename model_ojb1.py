@@ -17,21 +17,41 @@ import pandas as pd
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 
-## import data from mbc_model_data.csv
-pxrx = pd.read_csv('E:\\Hackathon_project\\rawdata\\mbc_model_data.csv',header = 0)
-
-
 result = pd.DataFrame(index=['XGBoo','RF','RP-XGB','RP-RF','SVC','RP-SVC'],columns=['tn','fp','fn','tp'])
-y = pxrx['y']
-X = pxrx.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])
-# standard scaling
-pxrx['MONTH_ID']=(pxrx['MONTH_ID']-pxrx['MONTH_ID'].mean())/pxrx['MONTH_ID'].std()
+
+pxrx = pd.read_csv('mbc_model_data.csv',header = 0)
+pxrx['MONTH_DIFF']=(pxrx['MONTH_DIFF']-pxrx['MONTH_DIFF'].mean())/pxrx['MONTH_DIFF'].std()
 pxrx['UNIT_OF_SVC_AMT']=(pxrx['UNIT_OF_SVC_AMT']-pxrx['UNIT_OF_SVC_AMT'].mean())/pxrx['UNIT_OF_SVC_AMT'].std()
+pxrx = pd.get_dummies(pxrx,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID'])
 
-X = pd.get_dummies(X,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID'])
-X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.25, random_state=42)
+print('# of mbc patients: ',len(pxrx[pxrx['y']==1]['PATIENT_ID'].unique()))
+print('# of non-mbc patients: ',len(pxrx['PATIENT_ID'].unique())-len(pxrx[pxrx['y']==1]['PATIENT_ID'].unique()))
 
+ptlist = pxrx['PATIENT_ID'].unique()
+train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
+print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
 
+training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
+print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in train: ',15000-len(training[training['y']==1]['PATIENT_ID'].unique()))
+y_train = training['y']
+X_train = training.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])
+testing = pxrx.loc[pxrx['PATIENT_ID'].isin(list(test))]
+print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+
+testing = testing.sort_values(by=['PATIENT_ID','MONTH_ID'],ascending=(True,True))
+print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+testing=testing.drop_duplicates(subset=['PATIENT_ID','y'],keep='first')
+print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+testing.drop_duplicates(subset=['PATIENT_ID'],keep='last',inplace=True)
+print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+testing.shape
+y_test = testing['y']
+X_test = testing.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])
 
 ########################### XGBoosting #############
 xgb = XGBClassifier()
@@ -105,4 +125,3 @@ result.iloc[5,3] = tp_6
 
 
 result.to_csv('result_obj1.csv')
-
