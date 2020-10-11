@@ -62,10 +62,10 @@ brand2_test = brand2.head(20000)
 #brand2_test.drop_duplicates(subset=['PATIENT_ID','DRUG_TAG'],keep='first',inplace=True)
 
 
-len(brand2_test["PATIENT_ID"].unique())
+len(brand2["PATIENT_ID"].unique())
 
 
-brand3 = brand2_test[["PATIENT_ID",'DRUG_TAG','SERVICE_DATE']]
+brand3 = brand2[["PATIENT_ID",'DRUG_TAG','SERVICE_DATE']]
 
 brand2_tt = brand3.drop_duplicates(['PATIENT_ID'],keep="first",inplace=False)
 #brand2_tt = brand2_tt[["PATIENT_ID",'SERVICE_DATE']]
@@ -106,7 +106,19 @@ fin["BRAND_DIFF"] = fin.apply(lambda x:brand_diff(x),axis=1)
 
 
 fin["y"] = fin.apply(lambda x: obj2_lebal(x),axis=1)
-fin2 =fin.drop_duplicates(subset=['PATIENT_ID','y'],inplace=False)
+fin2 =fin.drop_duplicates(subset=['PATIENT_ID','y'],inplace=False
+fin3 = fin2.drop_duplicates(['PATIENT_ID'],keep="last",inplace=False)
+
+fin3[['PATIENT_ID', 'DRUG_TAG_x', 'SERVICE_DATE_x', 'DRUG_TAG_y','SERVICE_DATE_y', 'DATE_DIFF', 'y']]
+DIAG_2l.rename(index=str, columns={"DRUG_TAG_x":"1st_line","DRUG_TAG_y":"2nd_line","SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+
+
+
+
+
+
+
+
 
 #
 #
