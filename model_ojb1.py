@@ -80,7 +80,6 @@ result.iloc[3,1] = fp_4
 result.iloc[3,2] = fn_4
 result.iloc[3,3] = tp_4
 
-
 ############################# SVC ################
 clf = SVC(gamma='auto',C=0.5)
 clf.fit(X_train, y_train)
