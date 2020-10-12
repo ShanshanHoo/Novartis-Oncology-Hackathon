@@ -19,6 +19,7 @@ dg.isna().sum()
 
 df = dg.drop_duplicates(subset=["PATIENT_ID","SERVICE_DATE"])
 df.reset_index(drop=True, inplace=True)
+
 df2 = pd.get_dummies(dg, columns=['brand'])
 
 df2_dummy=df2
@@ -106,19 +107,22 @@ fin["BRAND_DIFF"] = fin.apply(lambda x:brand_diff(x),axis=1)
 
 
 fin["y"] = fin.apply(lambda x: obj2_lebal(x),axis=1)
-fin2 =fin.drop_duplicates(subset=['PATIENT_ID','y'],inplace=False
+fin2 =fin.drop_duplicates(subset=['PATIENT_ID','y'],inplace=False)
 fin3 = fin2.drop_duplicates(['PATIENT_ID'],keep="last",inplace=False)
 
-fin3[['PATIENT_ID', 'DRUG_TAG_x', 'SERVICE_DATE_x', 'DRUG_TAG_y','SERVICE_DATE_y', 'DATE_DIFF', 'y']]
-DIAG_2l.rename(index=str, columns={"DRUG_TAG_x":"1st_line","DRUG_TAG_y":"2nd_line","SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+fin3=fin3[['PATIENT_ID', 'DRUG_TAG_x', 'SERVICE_DATE_x', 'DRUG_TAG_y','SERVICE_DATE_y', 'DATE_DIFF', 'y']]
+fin3.rename(index=str, columns={"DRUG_TAG_x":"1st_line","DRUG_TAG_y":"2nd_line","SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+brand = brand.drop_duplicates(['DRUG_TAG'],inplace=False)
+fin3 = pd.merge(fin3,brand,how="left",left_on="1st_line",right_on="DRUG_TAG")
+fin3 = pd.merge(fin3,brand,how="left",left_on="2nd_line",right_on="DRUG_TAG")
+fin3=fin3.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','1st_line','2nd_line'])
+fin3.to_csv("define treatment 2l.csv",index=False)
 
-
-
-
-
-
-
-
+DIAG_2l = pd.read_csv("define diag 2l.csv")
+df = pd.merge(fin3,DIAG_2l,how="left",on="PATIENT_ID")
+df.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+df=df.drop(columns=['CLAIM_ID'])
+df.to_csv("trt_model_data.csv",index=False)
 
 #
 #

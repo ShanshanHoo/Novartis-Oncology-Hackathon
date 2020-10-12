@@ -36,7 +36,7 @@ dg_rf = dg_rf.rename(columns={"drug_id ":"drug_id"})
 dg_rf.head()
 dg=pd.merge(prx,dg_rf,how='left',on='drug_id',validate="m:1")
 
-dg.to_csv("drug_pxrx.csv", index = False)
+dg.to_csv("drug_pxrx_2l.csv", index = False)
 
 def label_brand (row):
    if row['drug_generic_name'] == 'PALBOCICLIB' or row['drug_name'] == 'IBRANCE':

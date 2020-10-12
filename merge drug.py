@@ -16,7 +16,7 @@ from sklearn.model_selection import train_test_split
 os.chdir("/Users/conta/Documents/Novartis")
 
 ## merge rx_px_combine with drug reference
-prx = pd.read_csv('rx_px_combine.csv', header=0)
+prx = pd.read_csv('rx_px_combine_2l.csv', header=0)
 
 dg_rf = pd.read_csv('Drug Reference1.csv', dtype={"drug_id ": str,"drug_name": str,"drug_generic_name": str},header=0)
 dg_rf = dg_rf[dg_rf.columns[0:3]] 
@@ -41,7 +41,7 @@ intersected_df = pd.merge(df3, df2, how='inner')
 len(intersected_df) # 429451
 len(intersected_df['drug_id'].unique()) # 21
 
-dg.to_csv("drug_pxrx.csv", index = False)
+dg.to_csv("drug_pxrx_2l.csv", index = False)
 
 #px = pd.read_csv('PX.txt', 
 #                   dtype={"PATIENT_ID": int,"CLAIM_ID": object,"CLAIM_LINE_ITEM": int,
