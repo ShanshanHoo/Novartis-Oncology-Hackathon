@@ -14,7 +14,7 @@ import re
 
 os.chdir("/Users/conta/Documents/Novartis")
 
-dg = pd.read_csv('drug_pxrx.csv', header=0)
+dg = pd.read_csv('drug_pxrx_2l.csv', header=0)
 
 def label_brand (row):
    if row['drug_generic_name'] == 'PALBOCICLIB' or row['drug_name'] == 'IBRANCE':
@@ -39,4 +39,4 @@ def label_brand (row):
       return 'AI'
    return 'OTHERS'
 dg['brand'] = dg.apply (lambda row: label_brand(row), axis=1)
-dg.to_csv("brand.csv", index = False)
+dg.to_csv("brand_2l.csv", index = False)

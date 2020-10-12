@@ -31,8 +31,8 @@ ptlist = pxrx['PATIENT_ID'].unique()
 train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
 print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
 
-training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
-print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
+training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]  # 取出list里面人的记录 （2）
+print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))  # 取出一个list（1）
 print('# of 0 in train: ',15000-len(training[training['y']==1]['PATIENT_ID'].unique()))
 y_train = training['y']
 X_train = training.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])

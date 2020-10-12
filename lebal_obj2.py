@@ -19,6 +19,7 @@ dg.isna().sum()
 
 df = dg.drop_duplicates(subset=["PATIENT_ID","SERVICE_DATE"])
 df.reset_index(drop=True, inplace=True)
+
 df2 = pd.get_dummies(dg, columns=['brand'])
 
 df2_dummy=df2
@@ -62,10 +63,10 @@ brand2_test = brand2.head(20000)
 #brand2_test.drop_duplicates(subset=['PATIENT_ID','DRUG_TAG'],keep='first',inplace=True)
 
 
-len(brand2_test["PATIENT_ID"].unique())
+len(brand2["PATIENT_ID"].unique())
 
 
-brand3 = brand2_test[["PATIENT_ID",'DRUG_TAG','SERVICE_DATE']]
+brand3 = brand2[["PATIENT_ID",'DRUG_TAG','SERVICE_DATE']]
 
 brand2_tt = brand3.drop_duplicates(['PATIENT_ID'],keep="first",inplace=False)
 #brand2_tt = brand2_tt[["PATIENT_ID",'SERVICE_DATE']]
@@ -107,16 +108,67 @@ fin["BRAND_DIFF"] = fin.apply(lambda x:brand_diff(x),axis=1)
 
 fin["y"] = fin.apply(lambda x: obj2_lebal(x),axis=1)
 fin2 =fin.drop_duplicates(subset=['PATIENT_ID','y'],inplace=False)
+fin3 = fin2.drop_duplicates(['PATIENT_ID'],keep="last",inplace=False)
 
-#
-#
-#fin2.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','MID','BRAND_DIFF'], inplace=True)
-#
-#fin22 = fin2.loc[fin2['y']== 1,] 
-#fin22.rename(index=str, columns={"SERVICE_DATE_x": "SERVICE_DATE"},inplace=True)
-#
-#
-#
-#obj2_labeled = pd.merge(brand2_test,fin22,how="left",on="PATIENT_ID")
+fin3=fin3[['PATIENT_ID', 'DRUG_TAG_x', 'SERVICE_DATE_x', 'DRUG_TAG_y','SERVICE_DATE_y', 'DATE_DIFF', 'y']]
+fin3.rename(index=str, columns={"DRUG_TAG_x":"1st_line","DRUG_TAG_y":"2nd_line","SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+brand = brand.drop_duplicates(['DRUG_TAG'],inplace=False)
+fin3 = pd.merge(fin3,brand,how="left",left_on="1st_line",right_on="DRUG_TAG")
+fin3 = pd.merge(fin3,brand,how="left",left_on="2nd_line",right_on="DRUG_TAG")
+fin3=fin3.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','1st_line','2nd_line'])
+fin3.to_csv("define treatment 2l.csv",index=False)
+
+DIAG_2l = pd.read_csv("define diag 2l.csv")
+df = pd.merge(fin3,DIAG_2l,how="left",on="PATIENT_ID")
+df.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+df=df.drop(columns=['CLAIM_ID'])
+df.to_csv("trt_model_data.csv",index=False)
+
+
+fin2 = pd.merge(fin2,brand,how="left",left_on="DRUG_TAG_x",right_on="DRUG_TAG")
+fin2 = pd.merge(fin2,brand,how="left",left_on="DRUG_TAG_y",right_on="DRUG_TAG")
+fin2=fin2.drop(columns=['DRUG_TAG_x','DRUG_TAG_y'])
+fin2.rename(index=str, columns={"SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+dff = pd.merge(fin2,DIAG_2l,how="left",on="PATIENT_ID")
+dff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+dff=dff.drop(columns=['CLAIM_ID'])
+dff.to_csv("trt_model_data_test.csv",index=False)
+
+fin = pd.merge(fin,brand,how="left",left_on="DRUG_TAG_x",right_on="DRUG_TAG")
+fin = pd.merge(fin,brand,how="left",left_on="DRUG_TAG_y",right_on="DRUG_TAG")
+fin=fin.drop(columns=['DRUG_TAG_x','DRUG_TAG_y'])
+fin.rename(index=str, columns={"SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+dfff = pd.merge(fin,DIAG_2l,how="left",on="PATIENT_ID")
+dfff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+dfff=dfff.drop(columns=['CLAIM_ID'])
+dfff["DIAG_DATE"].fillna('NA',inplace=True)
+dfff.to_csv("trt_model_data_test2.csv",index=False)
+
+# #################################
+fin22 = fin2.loc[fin2['y']== 1,] 
+fin20 = fin2.loc[fin2['y']==0,]
+fin22.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','BRAND_DIFF'], inplace=True)
+fin20.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','BRAND_DIFF'], inplace=True)
+
+lebal_2nd = pd.merge(brand2_test,fin22,how="left",on='PATIENT_ID')
+
+def day_diff(row):
+    day1=row["SERVICE_DATE"]
+    day2=row["SERVICE_DATE_x"]
+    day = days(day1,day2) 
+    if day >= 0:
+        p = 1
+    else:
+        p=0
+    return p
+
+lebal_2nd['Y'] = lebal_2nd.apply(lambda x:day_diff(x),axis=1)
+lebal_2nd.drop(columns=['y'],inplace=True)
+lebal_2nd.rename(index=str, columns={"SERVICE_DATE_x": "SERVICE_DATE_2nd"},inplace=True)
+
+lebal_2nd = lebal_2nd[['PATIENT_ID','CLAIM_ID','MONTH_ID','SERVICE_DATE','SERVICE_DATE_2nd','drug_id','DIAGNOSIS_CODE','brand','DRUG_TAG',
+                        'brand_AFI','brand_AI','brand_CHEMO','brand_FAS','brand_IBR','brand_KIS','brand_LET','brand_OTHERS',
+                        'brand_TAM','brand_VER','brand_XEL','Y']] 
+
 
 
