@@ -134,15 +134,31 @@ dff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG
 dff=dff.drop(columns=['CLAIM_ID'])
 dff.to_csv("trt_model_data_test.csv",index=False)
 
-#
-#
-#fin2.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','MID','BRAND_DIFF'], inplace=True)
-#
-#fin22 = fin2.loc[fin2['y']== 1,] 
-#fin22.rename(index=str, columns={"SERVICE_DATE_x": "SERVICE_DATE"},inplace=True)
-#
-#
-#
-#obj2_labeled = pd.merge(brand2_test,fin22,how="left",on="PATIENT_ID")
+# #################################
+fin22 = fin2.loc[fin2['y']== 1,] 
+fin20 = fin2.loc[fin2['y']==0,]
+fin22.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','BRAND_DIFF'], inplace=True)
+fin20.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','BRAND_DIFF'], inplace=True)
+
+lebal_2nd = pd.merge(brand2_test,fin22,how="left",on='PATIENT_ID')
+
+def day_diff(row):
+    day1=row["SERVICE_DATE"]
+    day2=row["SERVICE_DATE_x"]
+    day = days(day1,day2) 
+    if day >= 0:
+        p = 1
+    else:
+        p=0
+    return p
+
+lebal_2nd['Y'] = lebal_2nd.apply(lambda x:day_diff(x),axis=1)
+lebal_2nd.drop(columns=['y'],inplace=True)
+lebal_2nd.rename(index=str, columns={"SERVICE_DATE_x": "SERVICE_DATE_2nd"},inplace=True)
+
+lebal_2nd = lebal_2nd[['PATIENT_ID','CLAIM_ID','MONTH_ID','SERVICE_DATE','SERVICE_DATE_2nd','drug_id','DIAGNOSIS_CODE','brand','DRUG_TAG',
+                        'brand_AFI','brand_AI','brand_CHEMO','brand_FAS','brand_IBR','brand_KIS','brand_LET','brand_OTHERS',
+                        'brand_TAM','brand_VER','brand_XEL','Y']] 
+
 
 
