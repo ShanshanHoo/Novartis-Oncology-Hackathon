@@ -124,6 +124,16 @@ df.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_
 df=df.drop(columns=['CLAIM_ID'])
 df.to_csv("trt_model_data.csv",index=False)
 
+
+fin2 = pd.merge(fin2,brand,how="left",left_on="DRUG_TAG_x",right_on="DRUG_TAG")
+fin2 = pd.merge(fin2,brand,how="left",left_on="DRUG_TAG_y",right_on="DRUG_TAG")
+fin2=fin2.drop(columns=['DRUG_TAG_x','DRUG_TAG_y'])
+fin2.rename(index=str, columns={"SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+dff = pd.merge(fin2,DIAG_2l,how="left",on="PATIENT_ID")
+dff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+dff=dff.drop(columns=['CLAIM_ID'])
+dff.to_csv("trt_model_data_test.csv",index=False)
+
 #
 #
 #fin2.drop(columns=['DRUG_TAG_x','DRUG_TAG_y','SERVICE_DATE_y','DATE_DIFF','MID','BRAND_DIFF'], inplace=True)

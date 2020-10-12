@@ -27,7 +27,7 @@ os.chdir("/Users/conta/Documents/Novartis")
 
 result = pd.DataFrame(index=['XGBoo','RF','SVC'],columns=['tn','fp','fn','tp'])
 
-pxrx = pd.read_csv('trt_model_data.csv',header = 0)
+pxrx = pd.read_csv('trt_model_data_test.csv',header = 0)
 pxrx=pxrx.drop(columns=['1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE'])
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
 
@@ -37,7 +37,6 @@ train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
 train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
 train = train_1+train_0
 test = test_1+test_0
-print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
 
 training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
