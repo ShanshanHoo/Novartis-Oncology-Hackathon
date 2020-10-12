@@ -28,7 +28,7 @@ diag_c = pd.merge(diag,bc_sn_Code, how="left", on = "DIAGNOSIS_CODE")
 #diag_c = diag_c.drop_duplicates(subset=["PATIENT_ID"])
 
 ## merge rx_px_combine with drug reference, add brand
-prx = pd.read_csv('rx_px_combine.csv', header=0)
+prx = pd.read_csv('rx_px_combine_2l.csv', header=0)
 
 dg_rf = pd.read_csv('Drug Reference1.csv', dtype={"drug_id ": str,"drug_name": str,"drug_generic_name": str},header=0)
 dg_rf = dg_rf[dg_rf.columns[0:3]] 
@@ -61,9 +61,10 @@ def label_brand (row):
       return 'AI'
    return 'OTHERS'
 dg['brand'] = dg.apply (lambda row: label_brand(row), axis=1)
-dg.to_csv("brand.csv", index = False)
+dg.to_csv("brand_2l.csv", index = False)
 
 #sort by date
+dg = pd.read_csv('brand_2l.csv', header=0)
 dg.sort_values(by=['PATIENT_ID','SERVICE_DATE'],ascending=(False,True),inplace=True)
 dg.reset_index(drop=True,inplace=True)
 dg.isna().sum()
@@ -72,7 +73,7 @@ dg.drop(columns=['drug_name','drug_generic_name'],inplace=True)
 # define 1st line treatment
 #dg.drop(columns=['drug_id','drug_name','drug_generic_name'],inplace=True)
 df1 = dg.drop_duplicates(subset = ["PATIENT_ID"])
-df1.drop(columns=['CLAIM_ID','MONTH_ID','drug_id','DIAGNOSIS_CODE','drug_name','drug_generic_name','brand'],inplace=True)
+df1.drop(columns=['CLAIM_ID','MONTH_ID','drug_id','DIAGNOSIS_CODE','brand'],inplace=True)
 
 df=pd.merge(df1,dg,how='left',on=['PATIENT_ID','SERVICE_DATE'])
 df.shape # (348663, 7)
@@ -94,6 +95,8 @@ df2_dummy['brand_OTHERS']=df2_dummy.groupby(['PATIENT_ID'])['brand_OTHERS'].tran
 df2_dummy['brand_VER']=df2_dummy.groupby(['PATIENT_ID'])['brand_VER'].transform('sum')
 df2_dummy.sort_values(by=['PATIENT_ID','SERVICE_DATE','brand_AFI','brand_AI','brand_CHEMO','brand_FAS','brand_IBR','brand_KIS','brand_LET','brand_OTHERS','brand_TAM','brand_VER','brand_XEL'],ascending=(False,True,True,True,True,True,True,True,True,True,True,True,True),inplace=True)
 df3=df2_dummy.drop_duplicates(subset = ["PATIENT_ID"])
+
+
 
 df.shape
 df.columns

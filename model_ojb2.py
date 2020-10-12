@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Oct  9 14:17:39 2020
+Created on Sun Oct 11 19:20:28 2020
 
-@author: 31509
+@author: Shanshan Hu
 """
-
 import numpy as np
 from sklearn import random_projection
 from xgboost import XGBClassifier
@@ -16,10 +15,17 @@ from sklearn.ensemble import RandomForestClassifier
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
+import os
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sklearn as sk
+import re
+import datetime
+os.chdir("/Users/conta/Documents/Novartis")
 
 result = pd.DataFrame(index=['XGBoo','RF','RP-XGB','RP-RF','SVC','RP-SVC'],columns=['tn','fp','fn','tp'])
 
-pxrx = pd.read_csv('mbc_model_data.csv',header = 0)
+pxrx = pd.read_csv('trt_model_data.csv',header = 0)
 pxrx['MONTH_DIFF']=(pxrx['MONTH_DIFF']-pxrx['MONTH_DIFF'].mean())/pxrx['MONTH_DIFF'].std()
 pxrx['UNIT_OF_SVC_AMT']=(pxrx['UNIT_OF_SVC_AMT']-pxrx['UNIT_OF_SVC_AMT'].mean())/pxrx['UNIT_OF_SVC_AMT'].std()
 pxrx = pd.get_dummies(pxrx,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID'])
@@ -31,8 +37,8 @@ ptlist = pxrx['PATIENT_ID'].unique()
 train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
 print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
 
-training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]  # 取出list里面人的记录 （2）
-print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))  # 取出一个list（1）
+training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
+print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in train: ',15000-len(training[training['y']==1]['PATIENT_ID'].unique()))
 y_train = training['y']
 X_train = training.drop(columns=['y','PATIENT_ID','MONTH_ID','index'])

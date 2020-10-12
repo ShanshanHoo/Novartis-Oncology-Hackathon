@@ -10,7 +10,7 @@ import os
 import pandas as pd
 os.chdir("/Users/siqisun/Documents/graduate1/novartis hackthon/")
 
-px = pd.read_csv('PX.txt', 
+px = pd.read_csv('PX_2l.txt', 
                    dtype={"PATIENT_ID": int,"CLAIM_ID": object,"CLAIM_LINE_ITEM": int,
                           "CLAIM_TYP_CD": object,"PROCEDURE_CODE": object,"PRC1_MOD_CD": object,"PRC1_MOD_DESC": object,
                           "PRC_VERS_TYP_ID": object,"PROVIDER_BILLING_ID": int,"PROVIDER_FACILITY_ID": int,
@@ -22,7 +22,7 @@ px = pd.read_csv('PX.txt',
                           "RESTATE_FLAG": object,"FLEXIBLE_FLD_1_CHAR": object,"FLEXIBLE_FLD_2_CHAR": object}, 
                    sep="|")
 
-rx = pd.read_csv('RX.txt', 
+rx = pd.read_csv('RX_2l.txt', 
                    dtype={"PATIENT_ID": int,"CLAIM_ID": object,"NDC": object,"PROVIDER_ID": object,
                           "DIAGNOSIS_CODE": object,"DIAG_VERS_TYP_ID": object,"PAYER_PLAN_ID": object,
                           "REFILL_CODE": object,"DSPNSD_QTY": float,"DAYS_SUPPLY": int,"SERVICE_DATE": str,
@@ -66,4 +66,4 @@ len(all_claims.unique()) #2052070, indicate rx_claim_ids overlap with PX_CLAIM_I
 merged = merged.sort_values(by="PATIENT_ID", ascending=False) 
 merged_nodup = merged.drop_duplicates()
 #merged_nodup.shape (8930837, 5), indicates rx records dont fully overlap with px records
-merged.to_csv("rx_px_combine.csv", index = False)
+merged.to_csv("rx_px_combine_2l.csv", index = False)
