@@ -27,7 +27,7 @@ os.chdir("/Users/conta/Documents/Novartis")
 
 result = pd.DataFrame(index=['XGBoo','RF','SVC'],columns=['tn','fp','fn','tp'])
 
-pxrx = pd.read_csv('trt_model_data_test.csv',header = 0)
+pxrx = pd.read_csv('trt_model_data_test2.csv',header = 0)
 pxrx=pxrx.drop(columns=['1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE'])
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
 
@@ -84,4 +84,4 @@ result.iloc[2,2] = fn_3
 result.iloc[2,3] = tp_3
 
 
-result.to_csv('result_obj2.csv')
+result.to_csv('result_obj2_test2.csv')

@@ -134,6 +134,16 @@ dff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG
 dff=dff.drop(columns=['CLAIM_ID'])
 dff.to_csv("trt_model_data_test.csv",index=False)
 
+fin = pd.merge(fin,brand,how="left",left_on="DRUG_TAG_x",right_on="DRUG_TAG")
+fin = pd.merge(fin,brand,how="left",left_on="DRUG_TAG_y",right_on="DRUG_TAG")
+fin=fin.drop(columns=['DRUG_TAG_x','DRUG_TAG_y'])
+fin.rename(index=str, columns={"SERVICE_DATE_x":"1st_DIAG_DATE","SERVICE_DATE_y":"2nd_DIAG_DATE"},inplace=True)
+dfff = pd.merge(fin,DIAG_2l,how="left",on="PATIENT_ID")
+dfff.rename(index=str, columns={"DATE_DIFF_x":"TRT_DATE_DIFF","DATE_DIFF_y":"DIAG_DATE_DIFF"},inplace=True)
+dfff=dfff.drop(columns=['CLAIM_ID'])
+dfff["DIAG_DATE"].fillna('NA',inplace=True)
+dfff.to_csv("trt_model_data_test2.csv",index=False)
+
 # #################################
 fin22 = fin2.loc[fin2['y']== 1,] 
 fin20 = fin2.loc[fin2['y']==0,]
