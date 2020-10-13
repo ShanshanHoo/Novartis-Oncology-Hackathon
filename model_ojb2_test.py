@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report as cr
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.utils import resample
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
@@ -29,8 +30,11 @@ patient_1 = list(pxrx[pxrx['y']==1]['PATIENT_ID'])
 patient_0 = list(pxrx[pxrx['y']==0]['PATIENT_ID'])
 train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
 train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
+
 train = train_1+train_0
 test = test_1+test_0
+
+
 
 training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))

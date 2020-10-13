@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report as cr
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.utils import resample
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
@@ -147,10 +148,20 @@ pxrxl.to_csv('pxrxl1012.csv')
 
 result = pd.DataFrame(index=['XGBoo','RF'],columns=['tn','fp','fn','tp'])
 
+pxrxl = pd.read_csv('pxrxl.csv',header = 0)
 pxrxl = pd.get_dummies(pxrxl,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand','PRC_VERS_TYP_ID','NDC'])
 
-ptlist = pxrxl['PATIENT_ID'].unique()
-train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
+#ptlist = pxrxl['PATIENT_ID'].unique()
+#train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
+patient_1 = list(pxrxl[pxrxl['y']==1]['PATIENT_ID'])
+patient_0 = list(pxrxl[pxrxl['y']==0]['PATIENT_ID'])
+train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
+train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
+
+boot=resample(train_1, replace=True, n_samples=100000)
+
+train = train_1+train_0+boot
+test = test_1+test_0
 
 #ptlist = pxrxl['PATIENT_ID'].unique()
 #train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
@@ -165,7 +176,7 @@ X_train = training.drop(columns=['y','PATIENT_ID','SERVICE_DATE'])
 testing = pxrxl.loc[pxrxl['PATIENT_ID'].isin(list(test))]
 print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
-testing = testing.sort_values(by=['PATIENT_ID','MONTH_ID'],ascending=(True,True))
+testing = testing.sort_values(by=['PATIENT_ID'],ascending=(True))
 testing.shape
 y_test = testing['y']
 X_test = testing.drop(columns=['y','PATIENT_ID','SERVICE_DATE'])
