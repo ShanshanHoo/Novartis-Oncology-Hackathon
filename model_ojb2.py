@@ -28,7 +28,10 @@ os.chdir("/Users/conta/Documents/Novartis")
 result = pd.DataFrame(index=['XGBoo','RF','SVC'],columns=['tn','fp','fn','tp'])
 
 pxrx = pd.read_csv('trt_model_data_test2.csv',header = 0)
-pxrx=pxrx.drop(columns=['1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF'])
+pxrx=pxrx.drop(columns=['brand_AFI_x',
+       'brand_AI_x', 'brand_CHEMO_x', 'brand_FAS_x', 'brand_IBR_x',
+       'brand_KIS_x', 'brand_LET_x', 'brand_OTHERS_x', 'brand_TAM_x',
+       'brand_VER_x', 'brand_XEL_x','1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF'])
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
 
 #train, test = train_test_split(pxrx['PATIENT_ID'].unique(), test_size=0.25, random_state=42)
