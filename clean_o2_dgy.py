@@ -115,15 +115,13 @@ print('# of 1 in patient: ',len(pxrxl[pxrxl['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in data: ',pxrxl[pxrxl['y']==0].shape[0])
 print('# of 0 in patient: ',len(pxrxl[pxrxl['y']==0]['PATIENT_ID'].unique()))
 
+pxrxl['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
+pxrxl['day_diff']=(pxrxl['day_diff']-pxrxl['day_diff'].mean())/pxrxl['day_diff'].std()
+pxrxl['UNIT_OF_SVC_AMT']=(pxrxl['UNIT_OF_SVC_AMT']-pxrxl['UNIT_OF_SVC_AMT'].mean())/pxrxl['UNIT_OF_SVC_AMT'].std()
+pxrxl = pxrxl.drop(columns=['day_diff'])
 
 #################### 要怎么处理用来跑模型的数据 请从这里开始 #############################
 
-pxrxl_1 = pxrxl[pxrxl['y']==1].drop_duplicates(subset=['PATIENT_ID'])
-pxrxl_try = pd.concat([pxrxl_1,pxrxl[pxrxl['y']==0]])
-pxrxl_try = pxrxl_try.sort_values(by=['PATIENT_ID','SERVICE_DATE'],ascending=(False,True))
-pxrxl_try['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
-pxrxl_try['day_diff']=(pxrxl_try['day_diff']-pxrxl_try['day_diff'].mean())/pxrxl_try['day_diff'].std()
-pxrxl_try['UNIT_OF_SVC_AMT']=(pxrxl_try['UNIT_OF_SVC_AMT']-pxrxl_try['UNIT_OF_SVC_AMT'].mean())/pxrxl_try['UNIT_OF_SVC_AMT'].std()
 
 #########################################
 pxrxl_try.to_csv('pxrxl.csv')
