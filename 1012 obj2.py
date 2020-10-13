@@ -160,7 +160,7 @@ train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
 
 boot=resample(train_1, replace=True, n_samples=100000)
 
-train = train_1+train_0+boot
+train = train_1+train_0#+boot
 test = test_1+test_0
 
 #ptlist = pxrxl['PATIENT_ID'].unique()
@@ -169,13 +169,13 @@ test = test_1+test_0
 
 training = pxrxl.loc[pxrxl['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
-print('# of 0 in train: ',15000-len(training[training['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in train: ',len(training[training['y']==0]['PATIENT_ID'].unique()))
 y_train = training['y']
 X_train = training.drop(columns=['y','PATIENT_ID','SERVICE_DATE'])
 
 testing = pxrxl.loc[pxrxl['PATIENT_ID'].isin(list(test))]
 print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
-print('# of 0 in test: ',5000-len(testing[testing['y']==1]['PATIENT_ID'].unique()))
+print('# of 0 in test: ',len(testing[testing['y']==0]['PATIENT_ID'].unique()))
 testing = testing.sort_values(by=['PATIENT_ID'],ascending=(True))
 testing.shape
 y_test = testing['y']
