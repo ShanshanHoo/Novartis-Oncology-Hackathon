@@ -54,7 +54,7 @@ px_l.drop(columns=['CLAIM_ID', 'CLAIM_LINE_ITEM','PRC1_MOD_CD', 'PRC1_MOD_DESC',
                    'PROVIDER_REFERRING_ID','PROVIDER_RENDERING_ID', 'SVC_CRGD_AMT','PAYER_PLAN_ID', 'PAY_TYPE','PRODUCT','DIAG_CD_POSN_NBR',
                    'DIAG_DESC', 'WEEK_END_FRI', 'RESTATE_FLAG','FLEXIBLE_FLD_1_CHAR', 'FLEXIBLE_FLD_2_CHAR'],inplace=True)
 
-dg_rf = pd.read_csv('Drug Reference1.csv', dtype={'drug_id':str,'drug_name':str,'drug_generic_name':str},header=0)
+dg_rf = pd.read_csv('Drug Reference.csv', dtype={'drug_id':str,'drug_name':str,'drug_generic_name':str},header=0)
 dg_rf = dg_rf.rename(columns={"drug_id ":"drug_id"})
 dg_rf = dg_rf[dg_rf.columns[0:3]] 
 
