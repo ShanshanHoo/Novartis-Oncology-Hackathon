@@ -33,6 +33,7 @@ pxrx=pxrx.drop(columns=['brand_AFI_x',
        'brand_KIS_x', 'brand_LET_x', 'brand_OTHERS_x', 'brand_TAM_x',
        'brand_VER_x', 'brand_XEL_x','1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF'])
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
+pxrx=pxrx[pxrx.TRT_DATE_DIFF > 30]
 
 #train, test = train_test_split(pxrx['PATIENT_ID'].unique(), test_size=0.25, random_state=42)
 
@@ -46,11 +47,13 @@ test = test_1+test_0
 training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in train: ',len(training[training['y']==0]['PATIENT_ID'].unique()))
+training[training['y']==1].shape[0]
 y_train = training['y']
 X_train = training.drop(columns=['y','PATIENT_ID'])
 testing = pxrx.loc[pxrx['PATIENT_ID'].isin(list(test))]
 print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in test: ',len(testing[testing['y']==0]['PATIENT_ID'].unique()))
+testing[testing['y']==1].shape[0]
 testing.shape
 y_test = testing['y']
 X_test = testing.drop(columns=['y','PATIENT_ID'])
