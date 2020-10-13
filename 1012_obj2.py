@@ -165,7 +165,7 @@ X_train = training.drop(columns=['y','PATIENT_ID','SERVICE_DATE','day_diff'])
 testing = pxrxl.loc[pxrxl['PATIENT_ID'].isin(list(test))]
 print('# of 1 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
 print('# of 0 in test: ',len(testing[testing['y']==1]['PATIENT_ID'].unique()))
-testing = testing.sort_values(by=['PATIENT_ID','MONTH_ID'],ascending=(True,True))
+
 testing.shape
 y_test = testing['y']
 X_test = testing.drop(columns=['y','PATIENT_ID','SERVICE_DATE','day_diff'])
