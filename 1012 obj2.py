@@ -184,15 +184,15 @@ result.iloc[0,3] = tp_1
 result.to_csv('result_obj1.csv')
 print(result)
 
-######################### Random Forest #############
-clf = RandomForestClassifier()
-clf.fit(X_train,y_train)
-y_pred = clf.predict(X_test)
-tn_2, fp_2, fn_2, tp_2 = confusion_matrix(y_test, y_pred).ravel()
-result.iloc[1,0] = tn_2
-result.iloc[1,1] = fp_2
-result.iloc[1,2] = fn_2
-result.iloc[1,3] = tp_2
-
-result.to_csv('result_obj1.csv')
-print(result)
+########################## Random Forest #############
+#clf = RandomForestClassifier()
+#clf.fit(X_train,y_train)
+#y_pred = clf.predict(X_test)
+#tn_2, fp_2, fn_2, tp_2 = confusion_matrix(y_test, y_pred).ravel()
+#result.iloc[1,0] = tn_2
+#result.iloc[1,1] = fp_2
+#result.iloc[1,2] = fn_2
+#result.iloc[1,3] = tp_2
+#
+#result.to_csv('result_obj1.csv')
+#print(result)
