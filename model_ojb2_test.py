@@ -18,15 +18,16 @@ import datetime
 result = pd.DataFrame(index=['XGBoo'],columns=['tn','fp','fn','tp'])
 
 pxrx = pd.read_csv('trt_model_data_test2.csv',header = 0)
-pxrx=pxrx.drop(columns=['1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE'])
+pxrx=pxrx.drop(columns=['1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF'])
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
 
-patient_1 = list(pxrx[pxrx['y']==1]['PATIENT_ID'])
-patient_0 = list(pxrx[pxrx['y']==0]['PATIENT_ID'])
-train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
-train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
-train = train_1+train_0
-test = test_1+test_0
+train, test = train_test_split(pxrx['PATIENT_ID'].unique(), test_size=0.25, random_state=42)
+#patient_1 = list(pxrx[pxrx['y']==1]['PATIENT_ID'])
+#patient_0 = list(pxrx[pxrx['y']==0]['PATIENT_ID'])
+#train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
+#train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
+#train = train_1+train_0
+#test = test_1+test_0
 
 training = pxrx.loc[pxrx['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
