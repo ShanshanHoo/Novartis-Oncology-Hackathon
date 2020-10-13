@@ -98,7 +98,7 @@ px_l.drop_duplicates(keep='first',inplace=True)
 
 pxrxl = pd.concat([px_l,rx_l],ignore_index=True)
 pxrxl.drop(columns=['PLACE_OF_SERVICE','PROVIDER_ID','CLAIM_TYP_CD','MONTH_ID','DAYS_SUPPLY'],inplace=True)
-pxrxl.drop(columns=['PLACE_OF_SERVICE','PROVIDER_ID','CLAIM_TYP_CD','MONTH_ID','DAYS_SUPPLY','NDC','DIAGNOSIS_CODE'],inplace=True)
+#pxrxl.drop(columns=['PLACE_OF_SERVICE','PROVIDER_ID','CLAIM_TYP_CD','MONTH_ID','DAYS_SUPPLY','NDC','DIAGNOSIS_CODE'],inplace=True)
 
 
 pxrxl = pxrxl.sort_values(by=['PATIENT_ID','SERVICE_DATE'],ascending=(False,True))
