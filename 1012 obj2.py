@@ -152,9 +152,9 @@ pxrxl = pd.get_dummies(pxrxl,columns=['DIAGNOSIS_CODE','DIAG_VERS_TYP_ID','brand
 ptlist = pxrxl['PATIENT_ID'].unique()
 train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
 
-ptlist = pxrxl['PATIENT_ID'].unique()
-train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
-print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
+#ptlist = pxrxl['PATIENT_ID'].unique()
+#train, test = train_test_split( ptlist, test_size=0.25, random_state=42)
+#print('# of training: ',train.shape[0],'\n','# of testing: ',test.shape[0])
 
 training = pxrxl.loc[pxrxl['PATIENT_ID'].isin(list(train))]
 print('# of 1 in train: ',len(training[training['y']==1]['PATIENT_ID'].unique()))
