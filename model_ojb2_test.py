@@ -17,7 +17,7 @@ import re
 import datetime
 result = pd.DataFrame(index=['XGBoo'],columns=['tn','fp','fn','tp'])
 
-pxrx = pd.read_csv('trt_model_data_test.csv',header = 0)
+pxrx = pd.read_csv('pxrxl.csv',header = 0)
 pxrx=pxrx.drop(columns=['brand_AFI_x',
        'brand_AI_x', 'brand_CHEMO_x', 'brand_FAS_x', 'brand_IBR_x',
        'brand_KIS_x', 'brand_LET_x', 'brand_OTHERS_x', 'brand_TAM_x',
