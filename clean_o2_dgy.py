@@ -124,6 +124,6 @@ pxrxl = pxrxl.drop(columns=['day_diff'])
 
 
 #########################################
-pxrxl_try.to_csv('pxrxl.csv')
+pxrxl.to_csv('pxrxl.csv')
 #########################################
 
