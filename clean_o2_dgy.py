@@ -5,7 +5,7 @@ Created on Sat Oct 10 16:20:51 2020
 @author: 31509
 """
 import pandas as pd
-import numpy as np
+
 
 
 px_l = pd.read_csv('E:\\Hackathon_project\\rawdata\\PX_2l.txt',
@@ -58,7 +58,7 @@ rx_l.loc[(rx_l['drug_generic_name']=='ANASTROZOLE') | (rx_l['drug_generic_name']
         (rx_l['drug_name']=='AROMASIN')|(rx_l['drug_name']=='NOLVADEX')|(rx_l['drug_name']=='SOLTAMOX'),'brand']='AI'
 rx_l.drop(columns=['drug_id','drug_name','drug_generic_name'],inplace=True)
 
-rx_l.drop_duplicates(keep='first',inplace=True)
+rx_l.drop_duplicates(subset=['PATIENT_ID', 'brand', 'PROVIDER_ID', 'DIAGNOSIS_CODE', 'DIAG_VERS_TYP_ID'],keep='first',inplace=True)
 
 
 px_l=pd.merge(px_l,dg_rf,how='left',on='drug_id',validate="m:1")
@@ -76,13 +76,13 @@ px_l.loc[(px_l['drug_generic_name']=='ANASTROZOLE') | (px_l['drug_generic_name']
         (px_l['drug_name']=='AROMASIN')|(px_l['drug_name']=='NOLVADEX')|(px_l['drug_name']=='SOLTAMOX'),'brand']='AI'
 px_l.drop(columns=['drug_id','drug_name','drug_generic_name'],inplace=True)
 
-px_l.drop_duplicates(keep='first',inplace=True)
+px_l.drop_duplicates(subset=['PATIENT_ID', 'CLAIM_TYP_CD', 'brand', 'PRC_VERS_TYP_ID','UNIT_OF_SVC_AMT', 'PLACE_OF_SERVICE','NDC', 'DIAGNOSIS_CODE', 'DIAG_VERS_TYP_ID'],keep='first',inplace=True)
 
 
 
 pxrxl = pd.concat([px_l,rx_l],ignore_index=True)
 pxrxl.drop(columns=['PLACE_OF_SERVICE','PROVIDER_ID','CLAIM_TYP_CD','MONTH_ID','DAYS_SUPPLY'],inplace=True)
-pxrxl.drop(columns=['PLACE_OF_SERVICE','PROVIDER_ID','CLAIM_TYP_CD','MONTH_ID','DAYS_SUPPLY','NDC','DIAGNOSIS_CODE'],inplace=True)
+pxrxl.dropna(subset=['brand'],inplace=True)
 
 
 pxrxl = pxrxl.sort_values(by=['PATIENT_ID','SERVICE_DATE'],ascending=(False,True))
@@ -103,12 +103,16 @@ for i in range(len(plist)):
     diff = pxrxl[pxrxl['PATIENT_ID']==plist[i]]['SERVICE_DATE']-start
     day_diff=pd.concat([day_diff,diff])
     
+    
 pxrxl['day_diff']=day_diff.dt.days
 
 pxrxl['day_diff']=pd.to_numeric(pxrxl['day_diff'])
 
 pxrxl['y']=0
 pxrxl.loc[pxrxl['day_diff']>=30, 'y'] = 1
+
+
+
 print('# of 1 in data: ',pxrxl[pxrxl['y']==1].shape[0])
 print('# of 1 in patient: ',len(pxrxl[pxrxl['y']==1]['PATIENT_ID'].unique()))
 
@@ -116,7 +120,6 @@ print('# of 0 in data: ',pxrxl[pxrxl['y']==0].shape[0])
 print('# of 0 in patient: ',len(pxrxl[pxrxl['y']==0]['PATIENT_ID'].unique()))
 
 pxrxl['UNIT_OF_SVC_AMT'].fillna(0,inplace=True)
-pxrxl['day_diff']=(pxrxl['day_diff']-pxrxl['day_diff'].mean())/pxrxl['day_diff'].std()
 pxrxl['UNIT_OF_SVC_AMT']=(pxrxl['UNIT_OF_SVC_AMT']-pxrxl['UNIT_OF_SVC_AMT'].mean())/pxrxl['UNIT_OF_SVC_AMT'].std()
 pxrxl = pxrxl.drop(columns=['day_diff'])
 
