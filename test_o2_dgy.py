@@ -54,7 +54,7 @@ result.iloc[0,1] = fp_1
 result.iloc[0,2] = fn_1
 result.iloc[0,3] = tp_1
 
-result.to_csv('result_obj1.csv')
+result.to_csv('result_2.csv')
 print(result)
 
 ######################### Random Forest #############
@@ -67,37 +67,6 @@ result.iloc[1,1] = fp_2
 result.iloc[1,2] = fn_2
 result.iloc[1,3] = tp_2
 
-result.to_csv('result_obj1.csv')
+result.to_csv('result_2.csv')
 print(result)
 
-####################### RP-XGBoosting ###############
-transformer = random_projection.SparseRandomProjection(eps=0.6)
-X_train_rp = transformer.fit_transform(X_train)
-xgb = XGBClassifier()
-xgb.fit(X_train_rp,y_train)
-X_test_rp=transformer.transform(X_test)
-y_pred = xgb.predict(X_test_rp)
-tn_3, fp_3, fn_3, tp_3 = confusion_matrix(y_test, y_pred).ravel()
-result.iloc[2,0] = tn_3
-result.iloc[2,1] = fp_3
-result.iloc[2,2] = fn_3
-result.iloc[2,3] = tp_3
-
-result.to_csv('result_obj1.csv')
-print(result)
-
-####################### RP-Random Forest ###############
-transformer = random_projection.SparseRandomProjection(eps=0.6)
-X_train_rp = transformer.fit_transform(X_train)
-clf = RandomForestClassifier()
-clf.fit(X_train_rp,y_train)
-X_test_rp=transformer.transform(X_test)
-y_pred = clf.predict(X_test_rp)
-tn_4, fp_4, fn_4, tp_4 = confusion_matrix(y_test, y_pred).ravel()
-result.iloc[3,0] = tn_4
-result.iloc[3,1] = fp_4
-result.iloc[3,2] = fn_4
-result.iloc[3,3] = tp_4
-print(result)
-
-result.to_csv('result_obj1.csv')
