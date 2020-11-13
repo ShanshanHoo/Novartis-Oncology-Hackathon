@@ -18,21 +18,22 @@ import re
 import datetime
 result = pd.DataFrame(index=['XGBoo'],columns=['tn','fp','fn','tp'])
 
-pxrx = pd.read_csv('pxrxl.csv',header = 0)
+pxrx = pd.read_csv('trt_model_data_test2.csv',header = 0)
 pxrx=pxrx.drop(columns=['brand_AFI_x',
        'brand_AI_x', 'brand_CHEMO_x', 'brand_FAS_x', 'brand_IBR_x',
        'brand_KIS_x', 'brand_LET_x', 'brand_OTHERS_x', 'brand_TAM_x',
-       'brand_VER_x', 'brand_XEL_x','1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF'])
+       'brand_VER_x', 'brand_XEL_x','1st_DIAG_DATE', '2nd_DIAG_DATE', 'DIAG_DATE','BRAND_DIFF', 'DIAG_DATE_DIFF', 'TRT_DATE_DIFF'])
+#,'INDICATION_CODE', 'DIAG_DATE_DIFF', 'TRT_DATE_DIFF'
 pxrx = pd.get_dummies(pxrx, columns=['INDICATION_CODE'])
 
-#train, test = train_test_split(pxrx['PATIENT_ID'].unique(), test_size=0.25, random_state=42)
-patient_1 = list(pxrx[pxrx['y']==1]['PATIENT_ID'])
-patient_0 = list(pxrx[pxrx['y']==0]['PATIENT_ID'])
-train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
-train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
-
-train = train_1+train_0
-test = test_1+test_0
+train, test = train_test_split(pxrx['PATIENT_ID'].unique(), test_size=0.25, random_state=42)
+#patient_1 = list(pxrx[pxrx['y']==1]['PATIENT_ID'])
+#patient_0 = list(pxrx[pxrx['y']==0]['PATIENT_ID'])
+#train_1, test_1 = train_test_split( patient_1, test_size=0.25, random_state=42)
+#train_0, test_0 = train_test_split( patient_0, test_size=0.25, random_state=42)
+#
+#train = train_1+train_0
+#test = test_1+test_0
 
 
 
@@ -60,5 +61,15 @@ result.iloc[0,0] = tn_1
 result.iloc[0,1] = fp_1
 result.iloc[0,2] = fn_1
 result.iloc[0,3] = tp_1
+
+######################### Random Forest #############
+clf = RandomForestClassifier()
+clf.fit(X_train,y_train)
+y_pred = clf.predict(X_test)
+tn_2, fp_2, fn_2, tp_2 = confusion_matrix(y_test, y_pred).ravel()
+result.iloc[0,0] = tn_2
+result.iloc[0,1] = fp_2
+result.iloc[0,2] = fn_2
+result.iloc[0,3] = tp_2
 
 result.to_csv('result_obj2_test2_test.csv')
